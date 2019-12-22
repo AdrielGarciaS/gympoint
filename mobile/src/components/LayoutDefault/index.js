@@ -15,6 +15,7 @@ export default function LayoutDefault({ children, backPage, navigation }) {
   function handleSignOut() {
     dispatch(signOut());
   }
+  const focused = true;
 
   return (
     <Container>
@@ -22,7 +23,9 @@ export default function LayoutDefault({ children, backPage, navigation }) {
         <Image source={logo} />
         <ContainerAside>
           {backPage ? (
-            <TouchableOpacity onPress={() => navigation.navigate('List')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('List', focused)}
+            >
               <Icon name="chevron-left" size={20} color="#f52c45" />
             </TouchableOpacity>
           ) : (

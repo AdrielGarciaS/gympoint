@@ -14,6 +14,7 @@ export const Content = styled.div`
   text-align: center;
   background: #fff;
   padding: 50px 0;
+  border-radius: 4px;
 
   form {
     display: flex;

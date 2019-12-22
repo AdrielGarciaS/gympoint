@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import { parseISO } from 'date-fns';
 import HelpOrder from '../models/HelpOrder';
 import User from '../models/User';
 
@@ -22,6 +21,13 @@ class HelpOrderController {
           'answer',
           'answer_at',
         ],
+        include: [
+          {
+            model: User,
+            as: 'student',
+            attributes: ['name'],
+          },
+        ],
         order: [['created_at', 'DESC']],
         limit: 20,
         offset: (page - 1) * 20,
@@ -38,6 +44,13 @@ class HelpOrderController {
           'created_at',
           'answer',
           'answer_at',
+        ],
+        include: [
+          {
+            model: User,
+            as: 'student',
+            attributes: ['name'],
+          },
         ],
         order: [['created_at', 'DESC']],
         limit: 10,
