@@ -6,12 +6,13 @@ import mailConfig from '../config/mail';
 
 class Mail {
   constructor() {
-    const { host, port, secure, auth } = mailConfig;
+    const { host, port, secure = false, auth } = mailConfig;
     this.transporter = nodemailer.createTransport({
       host,
       port,
       secure,
       auth: auth.user ? auth : null,
+      ignoreTLS: true,
     });
 
     this.configureTemplates();
@@ -19,7 +20,6 @@ class Mail {
 
   configureTemplates() {
     const viewPath = resolve(__dirname, '..', 'app', 'views', 'emails');
-
     this.transporter.use(
       'compile',
       nodemailerhbs({
@@ -36,6 +36,7 @@ class Mail {
   }
 
   sendMail(message) {
+    console.log('Chegou no sendMail');
     return this.transporter.sendMail({
       ...mailConfig.default,
       ...message,
