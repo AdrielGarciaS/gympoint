@@ -35,6 +35,10 @@ Projeto desenvolvido como desafio final para o Bootcamp GoStack da Rocketseat.
 
 `Inserir configurações do Postgres, Redis, serviço de e-mail e senha para geração do token de autenticação`
 
+<h4>Executar na raiz do projeto para instalação das dependências:</h4>
+
+`yarn`
+
 <h4>Após criar DB executar para criação das tabelas (na raiz do projeto):</h4>
 
 `yarn sequelize db:migrate`
@@ -46,10 +50,6 @@ Projeto desenvolvido como desafio final para o Bootcamp GoStack da Rocketseat.
 <h4>src/server.js:</h4>
 
 `app.listen(PORTA)`
-
-<h4>Executar na raiz do projeto para instalação das dependências:</h4>
-
-`yarn`
 
 <h4>Executar back-end:</h4>
 
@@ -88,6 +88,10 @@ baseURL: 'http://ENDERECO-BACK-END:PORTA'
 
 Obs: Caso o endereço seja localhost e o emulador usado seja do Android Studio, localhost é 10.0.2.2
 ````
+
+<h4>Executar na raiz do projeto para instalação das dependências:</h4>
+
+`yarn`
 
 <h4>Executar na raiz do projeto:</h4>
 
