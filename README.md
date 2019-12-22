@@ -1,7 +1,19 @@
 
 
 # Gympoint
-Projeto desenvolvido como desafio final para o Bootcamp GoStack da Rocketseat
+Projeto desenvolvido como desafio final para o Bootcamp GoStack da Rocketseat.
+
+<h2>App Mobile Android</h2>
+
+<img src="screenshots/mobile/checkin.gif" width="325" height="600"><img src="screenshots/mobile/novoPedido.gif" width="325" height="600"><img src="screenshots/mobile/pedidoAjuda.gif" width="325" height="600">
+
+<h2>Aplicação Web</h2>
+
+<img src="screenshots/frontend/login.png" width="1200" height="400">
+<img src="screenshots/frontend/alunos.png" width="1200" height="400">
+<img src="screenshots/frontend/planos.png" width="1200" height="400">
+<img src="screenshots/frontend/matriculas.png" width="1200" height="400">
+<img src="screenshots/frontend/pedidos.png" width="1200" height="400">
 
 <h2>Instruções para instalação do projeto</h2>
 
