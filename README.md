@@ -1,7 +1,12 @@
 
+<h1 align="center">
+  <img alt="Gympoint" title="Gympoint" src="backend/logo.png" width="200px" />
+</h1>
 
-# Gympoint
-Projeto desenvolvido como desafio final para o Bootcamp GoStack da Rocketseat.
+
+           
+                    Projeto desenvolvido como desafio final para o Bootcamp GoStack da Rocketseat.
+          
 
 <h2>App Mobile Android</h2>
 
