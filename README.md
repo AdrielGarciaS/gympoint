@@ -60,6 +60,10 @@
 
 `yarn dev`
 
+<h4>Executar fila de envio de email:</h4>
+
+`yarn queue`
+
 
 <h2>Front-end:</h2>
 
