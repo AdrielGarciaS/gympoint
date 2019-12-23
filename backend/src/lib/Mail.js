@@ -36,7 +36,6 @@ class Mail {
   }
 
   sendMail(message) {
-    console.log('Chegou no sendMail');
     return this.transporter.sendMail({
       ...mailConfig.default,
       ...message,

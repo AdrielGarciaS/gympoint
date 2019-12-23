@@ -27,10 +27,10 @@ class Queue {
   }
 
   processQueue() {
+    console.log('A fila executou!');
     jobs.forEach(job => {
       const { bee, handle } = this.queues[job.key];
       bee.on('failed', this.handleFailure).process(handle);
-      console.log('Chegou no processQueue');
     });
   }
 
