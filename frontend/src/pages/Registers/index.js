@@ -16,9 +16,11 @@ import api from '~/services/api';
 
 import { formatPriceBr, formatDateToString } from '~/util/format';
 
+import TablePage from '~/components/TablePage';
+import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
+
 import {
   ContainerRegisters,
-  ContentRegisters,
   ContainerForm,
   RegForm,
   SelectPlan,
@@ -104,7 +106,7 @@ export default function Registers() {
   async function searchStudent(name) {
     if (name !== '') {
       const response = await api.get(`users?q=${name}`);
-      return response.data.map(student => ({
+      response.data.map(student => ({
         value: student.id,
         label: student.name,
         ...student,
@@ -154,7 +156,6 @@ export default function Registers() {
   }
 
   async function handleDeleteRegister(register) {
-    console.tron.log(register);
     try {
       const { id, student } = register;
       const confirm = window.confirm(
@@ -326,7 +327,7 @@ export default function Registers() {
           </button>
         </aside>
       </header>
-      <ContentRegisters>
+      <TablePage>
         <table>
           <thead>
             <tr>
@@ -353,24 +354,16 @@ export default function Registers() {
                   )}
                 </td>
                 <td>
-                  <button
-                    type="button"
-                    onClick={() => handleSetUpdateRegister(register)}
-                  >
-                    editar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteRegister(register)}
-                  >
-                    apagar
-                  </button>
+                  <EditAndDeleteButtons
+                    handleEdit={() => handleSetUpdateRegister(register)}
+                    handleDelete={() => handleDeleteRegister(register)}
+                  />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </ContentRegisters>
+      </TablePage>
       <ContainerNavigate>
         <aside>
           <button type="button" onClick={() => handleBeforePage()}>

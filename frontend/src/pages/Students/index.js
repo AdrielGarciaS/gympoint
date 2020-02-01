@@ -7,9 +7,11 @@ import * as Yup from 'yup';
 import api from '~/services/api';
 import { formatDecimalBr, formatDecimalEn } from '~/util/format';
 
+import TablePage from '~/components/TablePage';
+import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
+
 import {
   ContainerUsers,
-  Content,
   ContainerNewUser,
   ContentNewUser,
   ContainerNavigate,
@@ -207,7 +209,7 @@ export default function Students() {
             />
           </aside>
         </header>
-        <Content>
+        <TablePage>
           <table>
             <thead>
               <tr>
@@ -224,21 +226,16 @@ export default function Students() {
                   <td>{user.email}</td>
                   <td>{user.age}</td>
                   <td>
-                    <button onClick={() => handleSetUpdate(user)} type="button">
-                      editar
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user)}
-                      type="button"
-                    >
-                      excluir
-                    </button>
+                    <EditAndDeleteButtons
+                      handleEdit={() => handleSetUpdate(user)}
+                      handleDelete={() => handleDeleteUser(user)}
+                    />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </Content>
+        </TablePage>
         <ContainerNavigate>
           <aside>
             <button type="button" onClick={() => handleBeforePage()}>

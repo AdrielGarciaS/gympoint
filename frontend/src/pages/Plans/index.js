@@ -6,9 +6,11 @@ import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import api from '~/services/api';
 import { formatPriceBr, formatDecimalEn, formatDecimalBr } from '~/util/format';
 
+import TablePage from '~/components/TablePage';
+import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
+
 import {
   ContainerPlans,
-  PlanList,
   ContainerForm,
   PlanForm,
   ContainerNavigate,
@@ -179,7 +181,7 @@ export default function Plans() {
           </button>
         </aside>
       </header>
-      <PlanList>
+      <TablePage>
         <table>
           <thead>
             <tr>
@@ -196,18 +198,16 @@ export default function Plans() {
                 <td>{plan.duration} meses</td>
                 <td>{plan.formattedPrice}</td>
                 <td>
-                  <button onClick={() => handleSetUpdate(plan)} type="button">
-                    editar
-                  </button>
-                  <button onClick={() => handleDeletePlan(plan)} type="button">
-                    apagar
-                  </button>
+                  <EditAndDeleteButtons
+                    handleEdit={() => handleSetUpdate(plan)}
+                    handleDelete={() => handleDeletePlan(plan)}
+                  />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </PlanList>
+      </TablePage>
       <ContainerNavigate>
         <aside>
           <button type="button" onClick={() => handleBeforePage()}>
