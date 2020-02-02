@@ -21,14 +21,17 @@ routes.use(authMiddleware);
 
 routes.put('/users/:id', UserController.update);
 routes.get('/users/', UserController.index);
+routes.get('/user/:id', UserController.index);
 routes.delete('/users/:id', UserController.delete);
 
 routes.get('/plans', PlanController.index);
+routes.get('/plan/:id', PlanController.index);
 routes.post('/plans', PlanController.store);
 routes.put('/plans/:id', PlanController.update);
 routes.delete('/plans/:id', PlanController.delete);
 
 routes.get('/registers', RegisterController.index);
+routes.get('/register/:id', RegisterController.index);
 routes.post('/registers', RegisterController.store);
 routes.put('/registers/:id', RegisterController.update);
 routes.delete('/registers/:id', RegisterController.delete);

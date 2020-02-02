@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Container, Content, Nav } from './styles';
@@ -11,7 +12,9 @@ export default function Header() {
   const dispatch = useDispatch();
   const profile = useSelector(state => state.auth.user);
 
-  const [page, setPage] = useState('students');
+  const [page, setPage] = useState();
+
+  console.tron.log(useParams());
 
   function navigate(actualPage) {
     setPage(actualPage);

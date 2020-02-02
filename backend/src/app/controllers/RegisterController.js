@@ -7,6 +7,36 @@ import User from '../models/User';
 
 class RegisterController {
   async index(req, res) {
+    const { id } = req.params;
+
+    if (id) {
+      const register = await Register.findOne({
+        where: { id },
+        attributes: [
+          'id',
+          'student_id',
+          'plan_id',
+          'start_date',
+          'end_date',
+          'price',
+          'active',
+        ],
+        include: [
+          {
+            model: User,
+            as: 'student',
+            attributes: ['name'],
+          },
+          {
+            model: Plan,
+            as: 'plan',
+            attributes: ['title', 'price', 'duration'],
+          },
+        ],
+      });
+      return res.json(register);
+    }
+
     const { page = 1 } = req.query;
 
     const registers = await Register.findAll({

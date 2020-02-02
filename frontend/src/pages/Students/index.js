@@ -1,39 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input } from '@rocketseat/unform';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
-import * as Yup from 'yup';
 
 import api from '~/services/api';
-import { formatDecimalBr, formatDecimalEn } from '~/util/format';
+import history from '~/services/history';
+import { formatDecimalBr } from '~/util/format';
 
 import TablePage from '~/components/TablePage';
 import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
 
-import {
-  ContainerUsers,
-  ContainerNewUser,
-  ContentNewUser,
-  ContainerNavigate,
-} from './styles';
-
-const schema = Yup.object().shape({
-  name: Yup.string().required('*'),
-  email: Yup.string()
-    .email()
-    .required('*'),
-  age: Yup.number()
-    .integer('*')
-    .positive('*')
-    .required('*'),
-  weight: Yup.string('*'),
-  height: Yup.number('Altura em cm').integer(),
-});
+import { ContainerUsers, ContainerNavigate } from './styles';
 
 export default function Students() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
-  const [manageUser, setManageUser] = useState(null);
   const [page, setPage] = useState(1);
 
   function handleSearch(user) {
@@ -51,29 +32,7 @@ export default function Students() {
     }
 
     loadUsers();
-  }, [page, search, manageUser]);
-
-  async function handleNewUser(user, { resetForm }) {
-    try {
-      const newUser = {
-        ...user,
-        weight: Number.isInteger(Number(user.weight))
-          ? formatDecimalEn(user.weight.concat(',00'))
-          : formatDecimalEn(user.weight),
-      };
-      if (schema.isValid(newUser)) {
-        const response = await api.post(`/users`, newUser);
-        setUsers([...users, response.data]);
-        toast.success('Cadastrado com sucesso!');
-        resetForm();
-      }
-    } catch (err) {
-      if (err.message === 'email must be unique') {
-        toast.error('Email já cadastrado');
-      }
-      toast.error('Erro ao cadastrar, verifique os dados informados');
-    }
-  }
+  }, [page, search]);
 
   async function handleDeleteUser(user) {
     const confirm = window.confirm(
@@ -96,7 +55,7 @@ export default function Students() {
   }
 
   function handleSetUpdate(user) {
-    return setManageUser(user);
+    return history.push(`/manageStudent/${user.id}`);
   }
 
   function handleNextPage() {
@@ -107,101 +66,15 @@ export default function Students() {
     if (page - 1 > 0) setPage(page - 1);
   }
 
-  async function handleUpdateUser(user, { resetForm }) {
-    try {
-      const updateUser = {
-        ...user,
-        weight: Number.isInteger(Number(user.weight))
-          ? formatDecimalEn(user.weight.concat(',00'))
-          : formatDecimalEn(user.weight),
-      };
-      await api.put(`/users/${manageUser.id}`, updateUser);
-      resetForm();
-      return toast.success('Cadastrado com Sucesso!');
-    } catch (err) {
-      console.tron.log(err);
-      if (
-        err.message === 'email must be unique' ||
-        err.message === 'Request failed with status code 402'
-      ) {
-        return toast.error('Email já cadastrado');
-      }
-      return toast.error('Erro ao cadastrar, verifique os dados informados');
-    }
-  }
-
-  if (manageUser) {
-    return (
-      <ContainerNewUser manageUser={manageUser}>
-        <header>
-          <h1>
-            {manageUser !== 'newUser'
-              ? 'Atualizar cadastro'
-              : 'Cadastro de aluno'}
-          </h1>
-          <aside>
-            <button
-              onClick={() => {
-                handleSetUpdate(false);
-              }}
-              type="button"
-            >
-              VOLTAR
-            </button>
-            <button form="newUserForm" type="submit">
-              {manageUser !== 'newUser' ? 'ATUALIZAR' : 'CADASTRAR'}
-            </button>
-          </aside>
-        </header>
-        <ContentNewUser>
-          <Form
-            initialData={manageUser}
-            id="newUserForm"
-            onSubmit={
-              manageUser !== 'newUser' ? handleUpdateUser : handleNewUser
-            }
-          >
-            <p>NOME COMPLETO</p>
-            <Input name="name" type="text" placeholder="José da Silva" />
-            <p>ENDEREÇO DE E-MAIL</p>
-            <Input name="email" type="email" placeholder="exemplo@email.com" />
-            <table>
-              <thead>
-                <tr>
-                  <th>IDADE</th>
-                  <th>PESO(kg)</th>
-                  <th>ALTURA(cm)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <Input name="age" />
-                  </td>
-                  <td>
-                    <Input name="weight" />
-                  </td>
-                  <td>
-                    <Input name="height" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </Form>
-        </ContentNewUser>
-      </ContainerNewUser>
-    );
-  }
-
   return (
     <>
-      <ContainerUsers manageUser={manageUser}>
+      <ContainerUsers>
         <header>
           <h1>Gerenciando alunos</h1>
           <aside>
-            <button onClick={() => setManageUser('newUser')} type="button">
-              CADASTRAR
-            </button>
+            <Link to="/manageStudent">
+              <button type="button">CADASTRAR</button>
+            </Link>
             <input
               type="text"
               placeholder="Buscar aluno"

@@ -2,21 +2,16 @@ import styled from 'styled-components';
 import { darken } from 'polished';
 
 export const Wrapper = styled.div`
-  flex: 1;
-  background: #f5f5f5;
-
   display: flex;
   justify-content: center;
 
   > div {
-    border-radius: 4px;
     max-width: 1200px;
     margin: 0 30px;
     width: 100%;
     header {
       display: flex;
       align-items: center;
-      flex-direction: row;
       justify-content: space-between;
       h1 {
         margin: 15px 0;
@@ -55,6 +50,7 @@ export const Wrapper = styled.div`
     > div {
       padding: 20px;
       background: #fff;
+      border-radius: 4px;
     }
   }
 `;

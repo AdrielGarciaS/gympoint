@@ -5,6 +5,13 @@ import Register from '../models/Register';
 
 class UserController {
   async index(req, res) {
+    const { id } = req.params;
+
+    if (id) {
+      const user = await User.findByPk(id);
+      return res.json(user);
+    }
+
     const name = req.query.q;
     const { page = 1 } = req.query;
 

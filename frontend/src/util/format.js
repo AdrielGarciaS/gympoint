@@ -20,3 +20,11 @@ export const { format: formatPriceEn } = new Intl.NumberFormat('en-US', {
 export function formatDateToString(date) {
   return format(new Date(date), 'yyyy-MM-dd');
 }
+
+export function formatDateToBr(dateISO) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(dateISO);
+}

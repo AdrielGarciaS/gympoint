@@ -1,30 +1,20 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Form, Input } from '@rocketseat/unform';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 
 import api from '~/services/api';
-import { formatPriceBr, formatDecimalEn, formatDecimalBr } from '~/util/format';
+import history from '~/services/history';
+import { formatPriceBr, formatDecimalBr } from '~/util/format';
 
 import TablePage from '~/components/TablePage';
 import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
 
-import {
-  ContainerPlans,
-  ContainerForm,
-  PlanForm,
-  ContainerNavigate,
-} from './styles';
+import { Container, ContainerNavigate } from './styles';
 
 export default function Plans() {
   const [plans, setPlans] = useState([]);
-  const [managePlan, setManagePlan] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [price, setPrice] = useState('0,0');
 
   const [page, setPage] = useState(1);
-
-  const calcPrice = useMemo(() => duration * price, [duration, price]) || 0;
 
   useEffect(() => {
     async function loadPlans() {
@@ -37,36 +27,7 @@ export default function Plans() {
       setPlans(data);
     }
     loadPlans();
-  }, [managePlan, page]);
-
-  async function handleNewPlan(plan, { resetForm }) {
-    try {
-      const newPlan = {
-        ...plan,
-        price: formatDecimalEn(plan.price),
-      };
-      const response = await api.post('/plans', newPlan);
-      setPlans([...plans, response.data]);
-      toast.success('Plano cadastrado com sucesso!');
-      resetForm();
-    } catch (error) {
-      toast.error('Erro ao cadastrar');
-    }
-  }
-
-  async function handleUpdatePlan(plan, { resetForm }) {
-    try {
-      const updatedPlan = {
-        ...plan,
-        price: formatDecimalEn(plan.price),
-      };
-      await api.put(`/plans/${managePlan.id}`, updatedPlan);
-      toast.success('Plano atualizado com sucesso!');
-      resetForm();
-    } catch (error) {
-      toast.error('Erro ao cadastrar');
-    }
-  }
+  }, [page]);
 
   async function handleDeletePlan(plan) {
     const confirm = window.confirm(
@@ -85,9 +46,7 @@ export default function Plans() {
   }
 
   function handleSetUpdate(plan) {
-    setManagePlan(plan);
-    setPrice(plan.price);
-    setDuration(plan.duration);
+    return history.push(`/managePlan/${plan.id}`);
   }
 
   function handleNextPage() {
@@ -98,85 +57,12 @@ export default function Plans() {
     if (page - 1 > 0) setPage(page - 1);
   }
 
-  if (managePlan) {
-    return (
-      <ContainerForm managePlan={managePlan}>
-        <header>
-          <h1>
-            {managePlan !== 'newPlan' ? 'Atualizar plano' : 'Cadastrar Plano'}
-          </h1>
-          <aside>
-            <button
-              onClick={() => {
-                setManagePlan(null);
-                setDuration(null);
-                setPrice(null);
-              }}
-              type="button"
-            >
-              VOLTAR
-            </button>
-            <button form="newPlan" type="submit">
-              {managePlan !== 'newPlan' ? 'ATUALIZAR' : 'CADASTRAR'}
-            </button>
-          </aside>
-        </header>
-        <PlanForm>
-          <Form
-            initialData={managePlan}
-            id="newPlan"
-            onSubmit={
-              managePlan !== 'newPlan' ? handleUpdatePlan : handleNewPlan
-            }
-          >
-            <p>TÍTULO DO PLANO</p>
-            <Input name="title" type="text" />
-            <table>
-              <thead>
-                <tr>
-                  <th>DURAÇÃO(meses)</th>
-                  <th>PREÇO MENSAL</th>
-                  <th>PREÇO TOTAL</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <Input
-                      onChange={e => setDuration(e.target.value)}
-                      name="duration"
-                      type="text"
-                    />
-                  </td>
-                  <td>
-                    <Input
-                      onChange={e => setPrice(formatDecimalEn(e.target.value))}
-                      name="price"
-                      type="text"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={formatPriceBr(calcPrice)}
-                      type="text"
-                      disabled
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </Form>
-        </PlanForm>
-      </ContainerForm>
-    );
-  }
-
   return (
-    <ContainerPlans managePlan={managePlan}>
+    <Container>
       <header>
         <h1>Gerenciar planos</h1>
         <aside>
-          <button onClick={() => setManagePlan('newPlan')} type="button">
+          <button onClick={() => history.push('/managePlan')} type="button">
             CADASTRAR
           </button>
         </aside>
@@ -219,6 +105,6 @@ export default function Plans() {
           </button>
         </aside>
       </ContainerNavigate>
-    </ContainerPlans>
+    </Container>
   );
 }
