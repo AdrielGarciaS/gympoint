@@ -4,13 +4,14 @@ import { MdClose, MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 
+import InfinityScroll from '~/components/InfinityScoll';
+
 import {
   ContainerOrders,
   ContentOrders,
   ContainerAnswer,
   ContentAnswer,
   Scroll,
-  ContainerNavigate,
 } from './styles';
 
 import api from '~/services/api';
@@ -30,9 +31,10 @@ export default function HelpOrders() {
   useEffect(() => {
     async function loadHelpOrders() {
       const response = await api.get(`/users/help-orders?page=${page}`);
-      setHelpOrders(response.data);
+      setHelpOrders([...helpOrders, ...response.data]);
     }
     loadHelpOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order, page]);
 
   function handleOpenHelpOrder(helpOrder) {
@@ -62,10 +64,6 @@ export default function HelpOrders() {
     setPage(page + 1);
   }
 
-  function handleBeforePage() {
-    if (page - 1 > 0) setPage(page - 1);
-  }
-
   return (
     <>
       <ContainerOrders answering={isAnswering}>
@@ -81,6 +79,7 @@ export default function HelpOrders() {
               </tr>
             </thead>
             <tbody>
+              <InfinityScroll loadMore={handleNextPage} />
               {helpOrders.map(helpOrder => (
                 <tr key={helpOrder.id}>
                   <td>
@@ -100,17 +99,6 @@ export default function HelpOrders() {
             </tbody>
           </table>
         </ContentOrders>
-        <ContainerNavigate>
-          <aside>
-            <button type="button" onClick={() => handleBeforePage()}>
-              <MdNavigateBefore size={36} color="#4d85ee" />
-            </button>
-            {page}
-            <button type="button" onClick={() => handleNextPage()}>
-              <MdNavigateNext size={36} color="#4d85ee" />
-            </button>
-          </aside>
-        </ContainerNavigate>
       </ContainerOrders>
       <ContainerAnswer answering={isAnswering}>
         <ContentAnswer>

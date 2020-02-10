@@ -9,6 +9,7 @@ export const Wrapper = styled.div`
     max-width: 1200px;
     margin: 0 30px;
     width: 100%;
+    margin-bottom: 30px;
     header {
       display: flex;
       align-items: center;

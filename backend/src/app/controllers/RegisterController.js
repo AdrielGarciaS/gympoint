@@ -1,5 +1,4 @@
 import { addMonths, parseISO } from 'date-fns';
-import * as Yup from 'yup';
 
 import Register from '../models/Register';
 import Plan from '../models/Plan';
@@ -66,36 +65,10 @@ class RegisterController {
       offset: (page - 1) * 20,
     });
 
-    registers.sort((a, b) => {
-      if (a.student.name > b.student.name) {
-        return 1;
-      }
-      if (a.student.name < b.student.name) {
-        return -1;
-      }
-      return 0;
-    });
-
     return res.json(registers);
   }
 
   async store(req, res) {
-    const schema = Yup.object().shape({
-      student_id: Yup.number()
-        .integer()
-        .positive()
-        .required(),
-      plan_id: Yup.number()
-        .integer()
-        .positive()
-        .required(),
-      start_date: Yup.date().required(),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-
     const existRegister = await Register.findOne({
       where: { student_id: req.body.student_id },
     });
@@ -123,9 +96,7 @@ class RegisterController {
       end_date,
       price,
     } = await Register.create({
-      student_id: req.body.student_id,
-      plan_id: req.body.plan_id,
-      start_date: req.body.start_date,
+      ...req.body,
       end_date: addMonths(parseISO(req.body.start_date), plan.duration),
       price: plan.duration * plan.price,
     });
@@ -140,20 +111,6 @@ class RegisterController {
   }
 
   async update(req, res) {
-    const schema = Yup.object().shape({
-      student_id: Yup.number()
-        .integer()
-        .positive(),
-      plan_id: Yup.number()
-        .integer()
-        .positive(),
-      start_date: Yup.date(),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-
     const register = await Register.findByPk(req.params.id);
 
     if (!register) {

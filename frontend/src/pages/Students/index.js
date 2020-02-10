@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
+import InfinityScroll from '~/components/InfinityScoll';
 
 import api from '~/services/api';
 import history from '~/services/history';
@@ -10,7 +10,7 @@ import { formatDecimalBr } from '~/util/format';
 import TablePage from '~/components/TablePage';
 import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
 
-import { ContainerUsers, ContainerNavigate } from './styles';
+import { ContainerUsers } from './styles';
 
 export default function Students() {
   const [users, setUsers] = useState([]);
@@ -28,10 +28,11 @@ export default function Students() {
         ...user,
         weight: formatDecimalBr(user.weight),
       }));
-      setUsers(data);
+      setUsers([...users, ...data]);
     }
 
     loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search]);
 
   async function handleDeleteUser(user) {
@@ -62,10 +63,6 @@ export default function Students() {
     setPage(page + 1);
   }
 
-  function handleBeforePage() {
-    if (page - 1 > 0) setPage(page - 1);
-  }
-
   return (
     <>
       <ContainerUsers>
@@ -93,6 +90,7 @@ export default function Students() {
               </tr>
             </thead>
             <tbody>
+              <InfinityScroll loadMore={handleNextPage} />
               {users.map(user => (
                 <tr key={user.id}>
                   <td>{user.name}</td>
@@ -109,17 +107,6 @@ export default function Students() {
             </tbody>
           </table>
         </TablePage>
-        <ContainerNavigate>
-          <aside>
-            <button type="button" onClick={() => handleBeforePage()}>
-              <MdNavigateBefore size={36} color="#4d85ee" />
-            </button>
-            {page}
-            <button type="button" onClick={() => handleNextPage()}>
-              <MdNavigateNext size={36} color="#4d85ee" />
-            </button>
-          </aside>
-        </ContainerNavigate>
       </ContainerUsers>
     </>
   );

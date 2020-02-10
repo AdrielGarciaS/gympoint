@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 
-import {
-  MdThumbDown,
-  MdThumbUp,
-  MdNavigateBefore,
-  MdNavigateNext,
-} from 'react-icons/md';
+import { MdThumbDown, MdThumbUp } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import pt from 'date-fns/locale/pt';
 
@@ -15,8 +10,9 @@ import history from '~/services/history';
 
 import TablePage from '~/components/TablePage';
 import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
+import InfinityScroll from '~/components/InfinityScoll';
 
-import { ContainerRegisters, ContainerNavigate } from './styles';
+import { ContainerRegisters } from './styles';
 
 export default function Registers() {
   const [registers, setRegisters] = useState([]);
@@ -43,9 +39,10 @@ export default function Registers() {
           }
         ),
       }));
-      setRegisters(data);
+      setRegisters([...registers, ...data]);
     }
     loadRegisters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   async function handleDeleteRegister(register) {
@@ -67,10 +64,6 @@ export default function Registers() {
 
   function handleNextPage() {
     setPage(page + 1);
-  }
-
-  function handleBeforePage() {
-    if (page - 1 > 0) setPage(page - 1);
   }
 
   function handleSetUpdateRegister(register) {
@@ -100,6 +93,7 @@ export default function Registers() {
             </tr>
           </thead>
           <tbody>
+            <InfinityScroll loadMore={handleNextPage} />
             {registers.map(register => (
               <tr key={register.id}>
                 <td>{register.student.name}</td>
@@ -124,17 +118,6 @@ export default function Registers() {
           </tbody>
         </table>
       </TablePage>
-      <ContainerNavigate>
-        <aside>
-          <button type="button" onClick={() => handleBeforePage()}>
-            <MdNavigateBefore size={36} color="#4d85ee" />
-          </button>
-          {page}
-          <button type="button" onClick={() => handleNextPage()}>
-            <MdNavigateNext size={36} color="#4d85ee" />
-          </button>
-        </aside>
-      </ContainerNavigate>
     </ContainerRegisters>
   );
 }

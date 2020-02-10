@@ -1,19 +1,19 @@
-import * as Yup from 'yup';
 import Sequelize from 'sequelize';
 import User from '../models/User';
 import Register from '../models/Register';
 
+import Cache from '../../lib/Cache';
+
 class UserController {
   async index(req, res) {
     const { id } = req.params;
+    const name = req.query.q;
+    const { page = 1 } = req.query;
 
     if (id) {
       const user = await User.findByPk(id);
       return res.json(user);
     }
-
-    const name = req.query.q;
-    const { page = 1 } = req.query;
 
     if (name) {
       const { Op } = Sequelize;
@@ -24,50 +24,32 @@ class UserController {
           },
         },
         attributes: ['id', 'name', 'email', 'admin'],
+        order: ['name'],
       });
 
       return res.json(users);
     }
 
+    const cacheKey = `users:${page}`;
+    const cached = await Cache.get(cacheKey);
+
+    if (cached) {
+      return res.json(cached);
+    }
+
     const users = await User.findAll({
       attributes: ['id', 'name', 'email', 'admin', 'age', 'weight', 'height'],
+      order: ['name'],
       limit: 20,
       offset: (page - 1) * 20,
     });
 
-    users.sort((a, b) => {
-      if (a.name > b.name) {
-        return 1;
-      }
-      if (a.name < b.name) {
-        return -1;
-      }
-      return 0;
-    });
+    await Cache.set(cacheKey, users);
 
     return res.json(users);
   }
 
   async store(req, res) {
-    const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      email: Yup.string()
-        .email()
-        .required(),
-      // password: Yup.string()
-      //   .required()
-      //   .min(6),
-      age: Yup.number()
-        .integer()
-        .positive(),
-      weight: Yup.number().positive(),
-      height: Yup.number().positive(),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-
     const userExist = await User.findOne({ where: { email: req.body.email } });
 
     if (userExist) {
@@ -82,6 +64,9 @@ class UserController {
       const { id, name, email, age, height, weight } = await User.create(
         req.body
       );
+
+      await Cache.invalidatePrefix('users');
+
       return res.json({
         id,
         name,
@@ -96,33 +81,6 @@ class UserController {
   }
 
   async update(req, res) {
-    const schema = Yup.object().shape({
-      name: Yup.string(),
-      email: Yup.string().email(),
-      age: Yup.number()
-        .integer()
-        .positive(),
-      weight: Yup.number().positive(),
-      height: Yup.number().positive(),
-      oldPassword: Yup.string().min(6),
-      password: Yup.string()
-        .min(6)
-        .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
-        ),
-      confirmPassword: Yup.string()
-        .min(6)
-        .when('password', (password, field) =>
-          password ? field.required().oneOf([Yup.ref('password')]) : field
-        ),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-
-    const { email } = req.body;
-
     const user = await User.findByPk(req.params.id);
 
     if (req.body.oldPassword) {
@@ -131,6 +89,8 @@ class UserController {
         return res.status(401).json({ error: 'Password does not match' });
       }
     }
+
+    const email = req.body.email ? req.body.email : '';
 
     if (email !== user.email) {
       const userExist = await User.findOne({
@@ -145,6 +105,8 @@ class UserController {
     }
 
     const { id, name, age, height, weight } = await user.update(req.body);
+
+    await Cache.invalidatePrefix('users');
 
     return res.json({
       id,
@@ -172,6 +134,8 @@ class UserController {
     const user = await User.findByPk(id);
 
     await user.destroy();
+
+    await Cache.invalidatePrefix('users');
 
     return res.json({ delete: 'Deleted successfull' });
   }

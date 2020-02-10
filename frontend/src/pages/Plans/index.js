@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 
 import api from '~/services/api';
 import history from '~/services/history';
@@ -8,8 +7,9 @@ import { formatPriceBr, formatDecimalBr } from '~/util/format';
 
 import TablePage from '~/components/TablePage';
 import EditAndDeleteButtons from '~/components/EditAndDeleteButtons';
+import InfinityScroll from '~/components/InfinityScoll';
 
-import { Container, ContainerNavigate } from './styles';
+import { Container } from './styles';
 
 export default function Plans() {
   const [plans, setPlans] = useState([]);
@@ -24,9 +24,10 @@ export default function Plans() {
         price: formatDecimalBr(plan.price),
         formattedPrice: formatPriceBr(plan.price),
       }));
-      setPlans(data);
+      setPlans([...plans, ...data]);
     }
     loadPlans();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   async function handleDeletePlan(plan) {
@@ -53,10 +54,6 @@ export default function Plans() {
     setPage(page + 1);
   }
 
-  function handleBeforePage() {
-    if (page - 1 > 0) setPage(page - 1);
-  }
-
   return (
     <Container>
       <header>
@@ -78,6 +75,7 @@ export default function Plans() {
             </tr>
           </thead>
           <tbody>
+            <InfinityScroll loadMore={handleNextPage} />
             {plans.map(plan => (
               <tr key={plan.id}>
                 <td>{plan.title}</td>
@@ -94,17 +92,6 @@ export default function Plans() {
           </tbody>
         </table>
       </TablePage>
-      <ContainerNavigate>
-        <aside>
-          <button type="button" onClick={() => handleBeforePage()}>
-            <MdNavigateBefore size={36} color="#4d85ee" />
-          </button>
-          {page}
-          <button type="button" onClick={() => handleNextPage()}>
-            <MdNavigateNext size={36} color="#4d85ee" />
-          </button>
-        </aside>
-      </ContainerNavigate>
     </Container>
   );
 }

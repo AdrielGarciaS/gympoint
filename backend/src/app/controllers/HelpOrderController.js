@@ -1,9 +1,9 @@
-import * as Yup from 'yup';
 import HelpOrder from '../models/HelpOrder';
 import User from '../models/User';
 
 import AnswerMail from '../jobs/AnswerMail';
 import Queue from '../../lib/Queue';
+import Cache from '../../lib/Cache';
 
 class HelpOrderController {
   async index(req, res) {
@@ -11,16 +11,17 @@ class HelpOrderController {
     const { page = 1 } = req.query;
     let questions = [];
 
+    const cacheKey = studentId
+      ? `student:${studentId}:helpOrders:${page}`
+      : `helpOrders:${page}`;
+    const cached = await Cache.get(cacheKey);
+
+    if (cached) {
+      return res.json(cached);
+    }
+
     if (!studentId) {
       questions = await HelpOrder.findAll({
-        attributes: [
-          'id',
-          'student_id',
-          'question',
-          'created_at',
-          'answer',
-          'answer_at',
-        ],
         include: [
           {
             model: User,
@@ -37,14 +38,6 @@ class HelpOrderController {
         where: {
           student_id: studentId,
         },
-        attributes: [
-          'id',
-          'student_id',
-          'question',
-          'created_at',
-          'answer',
-          'answer_at',
-        ],
         include: [
           {
             model: User,
@@ -58,18 +51,12 @@ class HelpOrderController {
       });
     }
 
+    await Cache.set(cacheKey, questions);
+
     return res.json(questions);
   }
 
   async store(req, res) {
-    const schema = Yup.object().shape({
-      question: Yup.string().required(),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
-
     const studentId = Number(req.params.id);
 
     const existStudent = await User.findByPk(studentId);
@@ -91,14 +78,7 @@ class HelpOrderController {
     });
   }
 
-  async answer(req, res) {
-    const schema = Yup.object().shape({
-      answer: Yup.string().required(),
-    });
-
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
-    }
+  async update(req, res) {
     const helpOrder = await HelpOrder.findByPk(Number(req.params.id));
 
     if (!helpOrder) {

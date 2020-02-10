@@ -37,6 +37,7 @@ class CheckinController {
       if (differenceDays >= -7) {
         return checkin;
       }
+      return false;
     });
 
     if (lastCheckins.length >= 5) {
